@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador</title>
+</head>
+<body>
+    <h1>Bienvenido al panel del Administrador</h1>
+
+
+    {% if user.is_authenticated %}
+    <form id="logout-form" action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Cerrar sesión</button>
+    </form>
+    {% endif %}
+    
+</body>
+</html>

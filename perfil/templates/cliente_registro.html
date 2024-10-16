@@ -1,0 +1,112 @@
+{% extends "./base.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+<style>
+    #id_username_helptext, #id_password1_helptext{
+        display: none;
+    }
+    input:focus {
+        outline: none;
+        border-color: #7a7a7a !important; /* Color medio plomo */
+        box-shadow: 0 0 5px #7a7a7a !important; /* Opcional, añade un efecto de sombra */
+    }
+    .registrar {
+        background-color: black !important; /* Color de fondo normal (puedes ajustarlo según tus necesidades) */
+        transition: background-color 0.3s ease; /* Transición suave para el cambio de color */
+        color: whitesmoke;
+        padding-left: 20px;
+        padding-right: 20px;
+        font-weight: bold;
+    }
+
+    .registrar:hover {
+        background-color: rgb(76, 76, 76) !important; /* Color de fondo en estado hover (gris) */
+        color: whitesmoke;
+    }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="col-12 col-md-8 col-lg-6">
+        <h2 class="text-center mb-2">Registro de Cliente</h2>
+
+        <form method="POST" autocomplete="off" class="p-4 shadow rounded bg-light">
+            {% csrf_token %}
+            <!-- Nombre de usuario -->
+            <div class="mb-3">
+                {{ form.username|as_crispy_field }}
+            </div>
+            <!-- Correo electrónico -->
+            <div class="mb-3">
+                {{ form.email|as_crispy_field }}
+            </div>
+            <!-- Teléfono -->
+            <div class="mb-3 telefono">
+                {{ form.telefono|as_crispy_field }}
+            </div>
+            <!-- Dirección -->
+            <div class="mb-3">
+                {{ form.direccion|as_crispy_field }}
+            </div>
+            <!-- Password1 -->
+            <div class="mb-3">
+                {{ form.password1|as_crispy_field }}
+            </div>
+            <!-- Password2 -->
+            <div class="mb-3">
+                {{ form.password2|as_crispy_field }}
+            </div>
+
+            <!-- Botón de registro -->
+            <div class="text-center">
+                <button type="submit" class="btn registrar">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const telefonoInput = document.querySelector(".telefono input");
+
+        telefonoInput.addEventListener('input', function(e) {
+            // Remover todo lo que no sean números
+            let value = this.value.replace(/\D/g, '');
+
+            // Limitar a 9 números
+            if (value.length > 9) {
+                value = value.slice(0, 9);
+            }
+
+            // Separar cada 3 dígitos
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i += 3) {
+                formattedValue += value.slice(i, i + 3) + ' ';
+            }
+
+            // Remover el último espacio extra si existe
+            formattedValue = formattedValue.trim();
+
+            // Actualizar el valor visual del input
+            this.value = formattedValue;
+
+            // Almacenar el valor sin formato en el campo oculto para envío
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'telefono_raw'; // Cambia este nombre si es necesario
+            hiddenInput.value = value; // Solo números
+
+            // Remover el campo oculto anterior si existe
+            const existingHiddenInput = document.querySelector("input[name='telefono_raw']");
+            if (existingHiddenInput) {
+                existingHiddenInput.remove();
+            }
+
+            // Agregar el nuevo campo oculto al formulario
+            this.parentNode.appendChild(hiddenInput);
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block body %}
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow" style="max-width: 400px;">
+        <div class="text-center mb-3">
+            <!-- Imagen del icono -->
+            <img src="{% static 'images/registro_logo.png' %}" alt="Registro Icon" style="width: 80px;">
+        </div>
+        <div class="text-center mb-3">
+            <h5 class="mb-2">Para crear tu cuenta te pediremos algunos datos</h5>
+            <p class="text-muted">Solo te tomará unos minutos.</p>
+        </div>
+        <div class="d-grid gap-2 p">
+            <!-- Botón para cuenta personal -->
+            <a href="{% url 'cliente_registro' %}" class="btn btn-outline-secondary btn-lg">
+                Crear cuenta personal
+            </a>
+            <!-- Botón para cuenta de empresa -->
+            <a href="{% url 'admin_registro' %}" class="btn btn-outline-secondary btn-lg">
+                Crear cuenta empresa discoteca
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

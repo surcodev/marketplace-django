@@ -1,0 +1,159 @@
+{% extends "./base.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+
+<style>
+    .textinput, #id_email, #id_correo_personal, #id_password1, #id_password2{
+        background-color: rgb(237, 237, 237);
+    }
+    #id_username_helptext, #id_password1_helptext{
+        display: none;
+    }
+    input:focus {
+        outline: none;
+        border-color: #7a7a7a !important; /* Color medio plomo */
+        box-shadow: 0 0 5px #7a7a7a !important; /* Opcional, añade un efecto de sombra */
+    }
+    .registrar {
+        background-color: black; /* Color de fondo normal (puedes ajustarlo según tus necesidades) */
+        transition: background-color 0.3s ease; /* Transición suave para el cambio de color */
+        color: whitesmoke;
+        padding-left: 20px;
+        padding-right: 20px;
+        font-weight: bold;
+    }
+
+    .registrar:hover {
+        background-color: rgb(76, 76, 76); /* Color de fondo en estado hover (gris) */
+        color: whitesmoke;
+    }
+</style>
+
+<div class="container mt-3">
+    <h2 class="text-center">Registro Administrador de Negocio</h2>
+    <form method="POST" autocomplete="off">
+        {% csrf_token %}
+        <div class="row">
+            <!-- Nombre del administrador -->
+            <div class="col-md-6">
+                {{ form.nombre_admin|as_crispy_field }}
+            </div>
+
+            <!-- Correo electrónico -->
+            <div class="col-md-6">
+                {{ form.email|as_crispy_field }}
+            </div>
+
+            <!-- Correo personal -->
+            <div class="col-md-6">
+                {{ form.correo_personal|as_crispy_field }}
+            </div>
+
+            <!-- Nombre de la negocio -->
+            <div class="col-md-6">
+                {{ form.nombre_negocio|as_crispy_field }}
+            </div>
+
+            <!-- Razón social -->
+            <div class="col-md-6">
+                {{ form.razon_social|as_crispy_field }}
+            </div>
+
+            <!-- RUC -->
+            <div class="col-md-6">
+                {{ form.ruc|as_crispy_field }}
+            </div>
+
+            <!-- Dirección -->
+            <div class="col-md-6">
+                {{ form.direccion|as_crispy_field }}
+            </div>
+
+            <!-- Departamento -->
+            <div class="col-md-6">
+                {{ form.departamento|as_crispy_field }}
+            </div>
+
+            <!-- Provincia -->
+            <div class="col-md-6">
+                {{ form.provincia|as_crispy_field }}
+            </div>
+
+            <!-- Distrito -->
+            <div class="col-md-6">
+                {{ form.distrito|as_crispy_field }}
+            </div>
+
+            <!-- Teléfono -->
+            <div class="col-md-6">
+                {{ form.telefono|as_crispy_field }}
+            </div>
+
+            <!-- Nombre de usuario -->
+            <div class="col-md-6">
+                {{ form.username|as_crispy_field }}
+            </div>
+
+            <!-- Contraseña -->
+            <div class="col-md-6">
+                {{ form.password1|as_crispy_field }}
+            </div>
+
+            <!-- Confirmar contraseña -->
+            <div class="col-md-6">
+                {{ form.password2|as_crispy_field }}
+            </div>
+        </div>
+
+        <!-- Botón de registro -->
+        <div class="text-center">
+            <button type="submit" class="btn registrar">Registrar</button>
+        </div>
+    </form>
+</div>
+
+<!-- Scripts jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    // Actualizar provincias cuando se selecciona un departamento
+    $("#id_departamento").change(function () {
+        var url = "{% url 'cargar_provincias' %}";  // URL de la vista para cargar provincias
+        var departamentoId = $(this).val();
+
+        $.ajax({
+            url: url,
+            data: {
+                'departamento_id': departamentoId
+            },
+            success: function (data) {
+                $("#id_provincia").html('<option value="">Seleccione una provincia</option>');
+                $("#id_distrito").html('<option value="">Seleccione un distrito</option>');  // Limpiar distritos
+                $.each(data, function (key, value) {
+                    $("#id_provincia").append('<option value="' + value.id + '">' + value.nombre + '</option>');
+                });
+            }
+        });
+    });
+
+    // Actualizar distritos cuando se selecciona una provincia
+    $("#id_provincia").change(function () {
+        var url = "{% url 'cargar_distritos' %}";  // URL de la vista para cargar distritos
+        var provinciaId = $(this).val();
+
+        $.ajax({
+            url: url,
+            data: {
+                'provincia_id': provinciaId
+            },
+            success: function (data) {
+                $("#id_distrito").html('<option value="">Seleccione un distrito</option>');
+                $.each(data, function (key, value) {
+                    $("#id_distrito").append('<option value="' + value.id + '">' + value.nombre + '</option>');
+                });
+            }
+        });
+    });
+</script>
+
+{% endblock %}
