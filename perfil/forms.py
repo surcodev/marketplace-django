@@ -1,26 +1,27 @@
 from django import forms
 from django.forms import ModelChoiceField
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Cliente, Administrador
+from .models import User, Cliente, Negocio
 from geografia.models import Departamento, Provincia, Distrito
 #from django.contrib.auth.models import User
 
 class ClienteRegistroForm(UserCreationForm):
     telefono = forms.CharField(max_length=15, label="Teléfono")
-    direccion = forms.CharField(max_length=255, label="Dirección")
+    # direccion = forms.CharField(max_length=50, label="Dirección")
+    nombre_cliente = forms.CharField(max_length=50, label="Nombre del cliente")
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ('username','email', 'password1', 'password2')
         labels = {
-            'username': "Nombre de usuario",
+            'username': 'Nombre de usuario',
             'email': "Correo electrónico",
             'password1': "Contraseña",
             'password2': "Confirmar contraseña",
         }
-        widgets = {
-            'username': forms.TextInput(attrs={'autofocus': False}),
-        }
+        # widgets = {
+        #     'username': forms.TextInput(attrs={'autofocus': False}),
+        # }
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -31,11 +32,10 @@ class ClienteRegistroForm(UserCreationForm):
             Cliente.objects.create(
                 user=user, 
                 telefono=self.cleaned_data['telefono'], 
-                direccion=self.cleaned_data['direccion']
             )
         return user
 
-class AdminRegistroForm(UserCreationForm):
+class NegocioRegistroForm(UserCreationForm):
     # Campos adicionales
     nombre_negocio = forms.CharField(max_length=255)
     razon_social = forms.CharField(max_length=255)
@@ -48,14 +48,26 @@ class AdminRegistroForm(UserCreationForm):
     distrito = forms.ModelChoiceField(queryset=Distrito.objects.none(), empty_label="Seleccione un distrito")  # Inicialmente vacío
 
     telefono = forms.CharField(max_length=15)
-    correo_personal = forms.EmailField(required=False)
     nombre_admin = forms.CharField(max_length=100, label="Nombre de administrador")
+    dni = forms.CharField(max_length=15)  # Agregado el campo dni
+    foto_dni = forms.ImageField(required=True)  # Agregado el campo para la foto del DNI
+
+    # Campo para el rubro
+    RUBRO_CHOICES = [
+        ('', 'Seleccione un rubro'),  # Opción predeterminada
+        ('tienda', 'Tienda'),
+        ('restaurante', 'Restaurante'),
+        ('tecnologia', 'Tecnología'),
+        ('moda', 'Moda'),
+        ('automotriz', 'Automotriz'),
+    ]
+    rubro = forms.ChoiceField(choices=RUBRO_CHOICES, label="Rubro")
+
 
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'email', 'password1', 'password2')
 
-    # Asegúrate de no añadir autofocus al campo 'username'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.pop('autofocus', None)
@@ -81,11 +93,12 @@ class AdminRegistroForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_admindisco = True
+        user.is_admin_negocio = True
         user.is_active = False  # Desactivar la cuenta por defecto
         if commit:
             user.save()
-            Administrador.objects.create(
+            # Crear el negocio asociado al usuario
+            negocio = Negocio.objects.create(
                 user=user,
                 nombre_admin=self.cleaned_data['nombre_admin'],
                 nombre_negocio=self.cleaned_data['nombre_negocio'],
@@ -96,6 +109,8 @@ class AdminRegistroForm(UserCreationForm):
                 provincia=self.cleaned_data['provincia'],
                 distrito=self.cleaned_data['distrito'],
                 telefono=self.cleaned_data['telefono'],
-                correo_personal=self.cleaned_data['correo_personal'],
+                dni=self.cleaned_data['dni'],  # Guardar el dni
+                foto_dni=self.cleaned_data.get('foto_dni'),  # Guardar la foto del DNI
+                rubro=self.cleaned_data['rubro'],  # Guardar el rubro
             )
         return user

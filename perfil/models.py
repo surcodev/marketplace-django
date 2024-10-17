@@ -1,41 +1,67 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from geografia.models import Departamento, Provincia, Distrito
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+from django.core.validators import RegexValidator
+
+import uuid
+from geografia.models import Departamento, Provincia, Distrito
 
 ################################################################################
 
 # perfil.User
 class User(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    is_admindisco = models.BooleanField('admin disco', default=False)
-    is_active = models.BooleanField(default=True)
+    is_admin_negocio = models.BooleanField('Admin. de negocio', default=False)
+    is_active = models.BooleanField('Usuario Activo', default=True)
+    first_name = None
+    last_name = None
+    last_login = None
+
     class Meta:
         verbose_name_plural = "Usuarios"
 
 # perfil.Cliente
 class Cliente(models.Model):
-    id = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     telefono = models.CharField(max_length=15)
-    direccion = models.CharField(max_length=255)
-    class Meta:
-        verbose_name_plural = "Clientes"
+    nombre_cliente = models.CharField(max_length=50)
 
-# perfil.Administrador
-class Administrador(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name_plural = "Clientes del Marketplace"
+    
+    # Sobrescribimos el método delete para eliminar también el usuario asociado
+    def delete(self, *args, **kwargs):
+        self.user.delete()
+        super().delete(*args, **kwargs)
+
+# perfil.Negocio
+class Negocio(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Relación con el modelo User
     nombre_admin = models.CharField(max_length=255)
     nombre_negocio = models.CharField(max_length=255)
     razon_social = models.CharField(max_length=255)
     ruc = models.CharField(max_length=11, unique=True)
-    departamento = models.ForeignKey(Departamento, on_delete=models.SET_NULL, null=True)
-    provincia = models.ForeignKey(Provincia, on_delete=models.SET_NULL, null=True)
-    distrito = models.ForeignKey(Distrito, on_delete=models.SET_NULL, null=True)
+
+    RUBRO_CHOICES = [
+        ('tienda', 'Tienda'),
+        ('restaurante', 'Restaurante'),
+        ('tecnologia', 'Tecnología'),
+        ('moda', 'Moda'),
+        ('automotriz', 'Automotriz'),
+    ]
+    
+    rubro = models.CharField(max_length=20, choices=RUBRO_CHOICES)
+
+    departamento = models.ForeignKey(Departamento, on_delete=models.CASCADE, null=True, blank=True)
+    provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE, null=True, blank=True)
+    distrito = models.ForeignKey(Distrito, on_delete=models.CASCADE, null=True, blank=True)
     direccion = models.CharField(max_length=255)
     telefono = models.CharField(max_length=15)
-    correo_personal = models.EmailField(blank=True, null=True)
+    dni = models.CharField(max_length=15)
+    foto_dni = models.ImageField(upload_to='uploads/dni')
 
     def clean(self):
         # Validar que la provincia pertenece al departamento seleccionado
@@ -51,6 +77,15 @@ class Administrador(models.Model):
             })
 
     class Meta:
-        verbose_name_plural = "Administradores de Discoteca"
+        verbose_name_plural = "Administradores de Negocio"
 
-        
+# Señal para eliminar el usuario relacionado cuando se elimina un negocio
+@receiver(post_delete, sender=Negocio)
+def borrar_usuario_relacionado(sender, instance, **kwargs):
+    if instance.user:
+        instance.user.delete()
+
+@receiver(post_delete, sender=Cliente)
+def borrar_usuario_relacionado(sender, instance, **kwargs):
+    if instance.user:
+        instance.user.delete()

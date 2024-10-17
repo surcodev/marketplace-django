@@ -5,8 +5,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django import forms
 
-from .forms import ClienteRegistroForm, AdminRegistroForm
-from .models import User, Cliente, Administrador
+from .forms import ClienteRegistroForm, NegocioRegistroForm
+from .models import User, Cliente, Negocio
 from django.http import JsonResponse
 from geografia.models import Provincia, Distrito
 
@@ -42,25 +42,30 @@ def registro(request):
 # REGISTRO DE CLIENTE
 def cliente_registro(request):
     form = ClienteRegistroForm(request.POST or None)
-    
+    print(form.is_valid())
     if form.is_valid():
         user = form.save()
         login(request, user)
-        messages.success(request, 'Cuenta pendiente de activación por el administrador')
+        messages.success(request, 'Registro exitoso')
         return redirect('login')
     
     return render(request, 'cliente_registro.html', {'form': form})
 
 # REGISTRO DE ADMIISTRADOR DISCOTECA
 def administrador_registro(request):
-    form = AdminRegistroForm(request.POST or None)
+    if request.method == 'POST':
+        # Asegúrate de incluir request.FILES para manejar la subida de archivos
+        form = NegocioRegistroForm(request.POST, request.FILES)  
+        
+        if form.is_valid():
+            user = form.save()  # Guardar el formulario y crear el usuario
+            login(request, user)  # Iniciar sesión automáticamente
+            messages.warning(request, 'Tu cuenta será activada por nuestro administrador en las próximas 24 horas.')
+            return redirect('login')  # Redirigir a una página de éxito (ajusta la URL según sea necesario)
+    else:
+        form = NegocioRegistroForm()  # Crear un formulario vacío en caso de un GET
     
-    if form.is_valid():
-        user = form.save()
-        login(request, user)
-        return redirect('login')
-    
-    return render(request, 'admin_registro.html', {'form': form})
+    return render(request, 'admin_registro.html', {'form': form}) 
 
 # LOGIN PANEL
 class EmailAuthenticationForm(forms.Form):
@@ -95,11 +100,13 @@ def login_view(request):
 
         if user:
             login(request, user)
-            if user.is_admindisco:
+            if user.is_admin_negocio:
                 return redirect('admin_panel')
             elif not user.is_superuser:
                 return redirect('cliente_panel')
         else:
             messages.error(request, 'Credenciales incorrectas')
+            # messages.warning(request, 'Ten en cuenta que esta acción es irreversible.')
+            # messages.success(request, 'Tu solicitud se ha procesado correctamente.')
 
     return render(request, 'login.html', {'form': form})

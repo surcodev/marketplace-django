@@ -1,19 +1,18 @@
 from django import forms
-from .models import Cliente, Administrador, User
-from django.contrib import messages
+from .models import Cliente, Negocio, User
 from django.core.exceptions import ValidationError
 
-class AdministradorForm(forms.ModelForm):
+class NegocioForm(forms.ModelForm):
     username = forms.CharField(label="Nombre de usuario", max_length=150)
     email = forms.EmailField(label="Correo electrónico")
     is_active = forms.BooleanField(label="Cuenta Activa", required=False)  # Campo agregado para is_active
 
     class Meta:
-        model = Administrador
-        fields = ['username', 'email', 'nombre_admin', 'nombre_negocio', 'razon_social', 'ruc', 'direccion', 'departamento', 'provincia', 'distrito', 'telefono', 'correo_personal', 'is_active']
+        model = Negocio
+        fields = ['username', 'email', 'nombre_admin', 'nombre_negocio', 'razon_social', 'ruc', 'rubro' , 'departamento', 'provincia', 'distrito', 'direccion', 'telefono','dni', 'foto_dni' , 'is_active']
 
     def __init__(self, *args, **kwargs):
-        super(AdministradorForm, self).__init__(*args, **kwargs)
+        super(NegocioForm, self).__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             # Inicializamos los campos con los datos del usuario
             self.fields['username'].initial = self.instance.user.username
@@ -22,7 +21,7 @@ class AdministradorForm(forms.ModelForm):
 
     def save(self, commit=True):
         # Guardar el administrador sin hacer commit
-        administrador = super(AdministradorForm, self).save(commit=False)
+        administrador = super(NegocioForm, self).save(commit=False)
 
         # Guardar el username, email y is_active del usuario relacionado
         user = administrador.user

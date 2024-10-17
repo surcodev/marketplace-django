@@ -3,21 +3,38 @@
 
 {% block body %}
 
+<!-- CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.min.css" />
+<!-- Default theme -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.min.css" />
+
 <style>
-    .textinput, #id_email, #id_correo_personal, #id_password1, #id_password2{
+    .textinput,
+    #id_email,
+    #id_correo_personal,
+    #id_password1,
+    #id_password2 {
         background-color: rgb(237, 237, 237);
     }
-    #id_username_helptext, #id_password1_helptext{
+
+    #id_password1_helptext,
+    #id_username_helptext {
         display: none;
     }
+
     input:focus {
         outline: none;
-        border-color: #7a7a7a !important; /* Color medio plomo */
-        box-shadow: 0 0 5px #7a7a7a !important; /* Opcional, añade un efecto de sombra */
+        border-color: #7a7a7a !important;
+        /* Color medio plomo */
+        box-shadow: 0 0 5px #7a7a7a !important;
+        /* Opcional, añade un efecto de sombra */
     }
+
     .registrar {
-        background-color: black; /* Color de fondo normal (puedes ajustarlo según tus necesidades) */
-        transition: background-color 0.3s ease; /* Transición suave para el cambio de color */
+        background-color: black;
+        /* Color de fondo normal (puedes ajustarlo según tus necesidades) */
+        transition: background-color 0.3s ease;
+        /* Transición suave para el cambio de color */
         color: whitesmoke;
         padding-left: 20px;
         padding-right: 20px;
@@ -25,14 +42,33 @@
     }
 
     .registrar:hover {
-        background-color: rgb(76, 76, 76); /* Color de fondo en estado hover (gris) */
+        background-color: rgb(76, 76, 76);
+        /* Color de fondo en estado hover (gris) */
         color: whitesmoke;
+    }
+
+
+    .password-wrapper {
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        /* Ajusta el tamaño del icono */
+        color: #6c757d;
+        /* Color del icono */
     }
 </style>
 
 <div class="container mt-3">
-    <h2 class="text-center">Registro Administrador de Negocio</h2>
-    <form method="POST" autocomplete="off">
+    <h2 class="text-center">Registro de Galería</h2>
+    <form method="POST" enctype="multipart/form-data" autocomplete="off">
         {% csrf_token %}
         <div class="row">
             <!-- Nombre del administrador -->
@@ -45,9 +81,19 @@
                 {{ form.email|as_crispy_field }}
             </div>
 
-            <!-- Correo personal -->
+            <!-- DNI -->
             <div class="col-md-6">
-                {{ form.correo_personal|as_crispy_field }}
+                {{ form.dni|as_crispy_field }}
+            </div>
+
+            <!-- Foto DNI -->
+            <div class="col-md-6">
+                {{ form.foto_dni|as_crispy_field }}
+            </div>
+
+            <!-- Rubro -->
+            <div class="col-md-6">
+                {{ form.rubro|as_crispy_field }}
             </div>
 
             <!-- Nombre de la negocio -->
@@ -65,11 +111,6 @@
                 {{ form.ruc|as_crispy_field }}
             </div>
 
-            <!-- Dirección -->
-            <div class="col-md-6">
-                {{ form.direccion|as_crispy_field }}
-            </div>
-
             <!-- Departamento -->
             <div class="col-md-6">
                 {{ form.departamento|as_crispy_field }}
@@ -85,26 +126,41 @@
                 {{ form.distrito|as_crispy_field }}
             </div>
 
+            <!-- Dirección -->
+            <div class="col-md-6">
+                {{ form.direccion|as_crispy_field }}
+            </div>
+
             <!-- Teléfono -->
             <div class="col-md-6">
                 {{ form.telefono|as_crispy_field }}
             </div>
 
-            <!-- Nombre de usuario -->
+            <!-- Username -->
             <div class="col-md-6">
                 {{ form.username|as_crispy_field }}
             </div>
 
             <!-- Contraseña -->
-            <div class="col-md-6">
+            <div class="col-md-6 password-wrapper">
+                <label for="passwordField1" class="form-label"></label>
                 {{ form.password1|as_crispy_field }}
+                <span class="toggle-password">
+                    <i class="bi bi-eye" id="toggleIcon1" aria-hidden="true"></i>
+                </span>
             </div>
 
             <!-- Confirmar contraseña -->
-            <div class="col-md-6">
+            <div class="col-md-6 password-wrapper">
+                <label for="passwordField2" class="form-label"></label>
                 {{ form.password2|as_crispy_field }}
+                <span class="toggle-password">
+                    <i class="bi bi-eye" id="toggleIcon2" aria-hidden="true"></i>
+                </span>
             </div>
+
         </div>
+
 
         <!-- Botón de registro -->
         <div class="text-center">
@@ -112,6 +168,18 @@
         </div>
     </form>
 </div>
+
+<!-- JavaScript -->
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/alertify.min.js"></script>
+
+<script>
+
+    {% for message in messages %}
+        alertify.set('notifier', 'position', 'top-right');
+        alertify.success('Current position : ' + alertify.get('notifier', 'position'));
+    {% endfor %}
+
+</script>
 
 <!-- Scripts jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -155,5 +223,33 @@
         });
     });
 </script>
+
+<!-- JavaScript para alternar visibilidad de la contraseña -->
+<script>
+    const passwordField1 = document.getElementById('{{ form.password1.id_for_label }}');
+    const togglePassword1 = document.getElementById('toggleIcon1');
+
+    const passwordField2 = document.getElementById('{{ form.password2.id_for_label }}');
+    const togglePassword2 = document.getElementById('toggleIcon2');
+
+    togglePassword1.addEventListener('click', function () {
+        const type = passwordField1.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField1.setAttribute('type', type);
+
+        // Cambiar el ícono
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
+
+    togglePassword2.addEventListener('click', function () {
+        const type = passwordField2.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField2.setAttribute('type', type);
+
+        // Cambiar el ícono
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
+</script>
+
 
 {% endblock %}

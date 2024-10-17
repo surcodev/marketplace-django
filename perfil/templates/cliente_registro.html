@@ -33,9 +33,9 @@
 
         <form method="POST" autocomplete="off" class="p-4 shadow rounded bg-light">
             {% csrf_token %}
-            <!-- Nombre de usuario -->
+            <!-- Nombre de cliente -->
             <div class="mb-3">
-                {{ form.username|as_crispy_field }}
+                {{ form.nombre_cliente|as_crispy_field }}
             </div>
             <!-- Correo electrónico -->
             <div class="mb-3">
@@ -45,9 +45,9 @@
             <div class="mb-3 telefono">
                 {{ form.telefono|as_crispy_field }}
             </div>
-            <!-- Dirección -->
+            <!-- Nombre de cliente -->
             <div class="mb-3">
-                {{ form.direccion|as_crispy_field }}
+                {{ form.username|as_crispy_field }}
             </div>
             <!-- Password1 -->
             <div class="mb-3">

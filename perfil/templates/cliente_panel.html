@@ -6,12 +6,16 @@
     <title>Panel de Cliente</title>
 </head>
 <body>
-    <h1>Bienvenido al panel del Cliente</h1>
+    <center>
+        <h1>[Panel del Cliente]</h1>
+    </center>
 
     {% if user.is_authenticated %}
     <form id="logout-form" action="{% url 'logout' %}" method="post">
         {% csrf_token %}
-        <button type="submit">Cerrar sesión</button>
+        <center>
+            <button type="submit">Cerrar sesión</button>
+        </center>
     </form>
     {% endif %}
     

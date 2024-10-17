@@ -9,8 +9,8 @@ from django.utils.translation import gettext_lazy as _
 UNFOLD = {
     "SHOW_HISTORY": False,
     "THEME": "light",
-    "SITE_TITLE": "Panel de SuperUsuario",
-    "SITE_HEADER": "Bienvenido al Panel de SuperUsuario",
+    "SITE_TITLE": "Panel de SuperAdministrador",
+    "SITE_HEADER": "Bienvenido al Panel de SuperAdministrador",
     "COLORS": {
         "font": {
             "subtle-light": "107 114 128",
@@ -152,3 +152,6 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'perfil.User'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

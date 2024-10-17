@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.admin import SimpleListFilter
-from .models import User, Cliente, Administrador
-from .customForms import ClienteForm, AdministradorForm
+from .models import User, Cliente, Negocio
+from .customForms import ClienteForm, NegocioForm
 from django.utils.html import format_html
 
 from unfold.admin import ModelAdmin
@@ -26,10 +26,10 @@ class CuentaActivaFilter(SimpleListFilter):
         if self.value() == '0':
             return queryset.filter(user__is_active=False)
 
-# 'is_admindisco'
+# 'is_admin_negocio'
 class CuentaUserFilter(SimpleListFilter):
     title = 'Tipo de usuario'
-    parameter_name = 'is_admindisco'
+    parameter_name = 'is_admin_negocio'
 
     def lookups(self, request, model_admin):
         return (
@@ -38,17 +38,22 @@ class CuentaUserFilter(SimpleListFilter):
         )
     def queryset(self, request, queryset):
         if self.value() == '1':
-            return queryset.filter(is_admindisco=True)
+            return queryset.filter(is_admin_negocio=True)
         if self.value() == '0':
-            return queryset.filter(is_admindisco=False)
+            return queryset.filter(is_admin_negocio=False)
 
 ##########################################################################
 # MODELOS PERSONALIZADOS
-# DISCOTECA
-class AdministradorAdmin(ModelAdmin):
-    form = AdministradorForm  # Utilizar el nuevo formulario personalizado
-    list_display = ('get_username', 'get_nombre_negocio', 'get_ruc', 'get_razon_social', 'get_email', 'get_is_active')
+# Negocio
+class NegocioAdmin(ModelAdmin):
+    form = NegocioForm  # Utilizar el nuevo formulario personalizado
+    list_display = ('get_foto_dni', 'get_username', 'get_nombre_negocio', 'get_ruc', 'get_razon_social', 'get_email', 'get_is_active')
     list_filter = (CuentaActivaFilter,)
+
+    def get_foto_dni(self, obj):
+        if obj.foto_dni:
+            return format_html('<img src="{}" style="width: 100px; height: auto;" />', obj.foto_dni.url)
+        return "No image"  # O puedes dejarlo vacío si no hay imagen
 
     def get_username(self, obj):
         return obj.nombre_admin
@@ -72,6 +77,7 @@ class AdministradorAdmin(ModelAdmin):
             'Activo' if obj.user.is_active else 'Inactivo'
         )
 
+    get_foto_dni.short_description = 'Foto DNI'
     get_username.short_description = 'Administrador de Discoteca'
     get_nombre_negocio.short_description = 'Negocio'
     get_ruc.short_description = 'RUC'
@@ -102,8 +108,8 @@ class ClienteAdmin(ModelAdmin):
 
 # MODELO USUARIO
 class UserAdmin(ModelAdmin):
-    list_display = ('username', 'email', 'get_is_active')
-    search_fields = ['username']
+    list_display = ('email', 'get_is_active')
+    search_fields = ['email']
     list_filter = (CuentaUserFilter,)
 
     def get_is_active(self, obj):
@@ -116,4 +122,4 @@ class UserAdmin(ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Cliente, ClienteAdmin)
-admin.site.register(Administrador, AdministradorAdmin)
+admin.site.register(Negocio, NegocioAdmin)
