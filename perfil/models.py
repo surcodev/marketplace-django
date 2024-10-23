@@ -14,7 +14,7 @@ from geografia.models import Departamento, Provincia, Distrito
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
-    is_admin_negocio = models.BooleanField('Admin. de negocio', default=False)
+    is_admin_negocio = models.BooleanField('Admin. de negocio', null=True, blank=True, default=None)
     is_active = models.BooleanField('Usuario Activo', default=True)
     first_name = None
     last_name = None
@@ -50,7 +50,8 @@ class Negocio(models.Model):
         ('restaurante', 'Restaurante'),
         ('tecnologia', 'Tecnología'),
         ('moda', 'Moda'),
-        ('automotriz', 'Automotriz'),
+        ('discoteca', 'Discoteca'),
+        #('LocalesNocturnos', 'LocalesNocturnos'),
     ]
     
     rubro = models.CharField(max_length=20, choices=RUBRO_CHOICES)
