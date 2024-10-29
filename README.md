@@ -1,4 +1,4 @@
-- Registro Galeria
+- Registro Negocio
     - nombre galeria
     - ruc
     - razon social
