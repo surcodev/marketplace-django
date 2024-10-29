@@ -37,6 +37,12 @@ class Cliente(models.Model):
         self.user.delete()
         super().delete(*args, **kwargs)
 
+
+class Rubro(models.Model):
+    nombre=models.CharField(max_length=100)
+    def __str__(self):
+        return self.nombre
+
 # perfil.Negocio
 class Negocio(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # Relación con el modelo User
@@ -45,16 +51,7 @@ class Negocio(models.Model):
     razon_social = models.CharField(max_length=255)
     ruc = models.CharField(max_length=11, unique=True)
 
-    RUBRO_CHOICES = [
-        ('tienda', 'Tienda'),
-        ('restaurante', 'Restaurante'),
-        ('tecnologia', 'Tecnología'),
-        ('moda', 'Moda'),
-        ('discoteca', 'Discoteca'),
-        #('LocalesNocturnos', 'LocalesNocturnos'),
-    ]
-    
-    rubro = models.CharField(max_length=20, choices=RUBRO_CHOICES)
+    rubro = models.ForeignKey(Rubro, on_delete=models.CASCADE)  # Relación con el modelo Rubro
 
     departamento = models.ForeignKey(Departamento, on_delete=models.CASCADE, null=True, blank=True)
     provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE, null=True, blank=True)

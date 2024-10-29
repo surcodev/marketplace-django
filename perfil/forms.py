@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelChoiceField
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Cliente, Negocio
+from .models import User, Cliente, Negocio, Rubro
 from geografia.models import Departamento, Provincia, Distrito
 #from django.contrib.auth.models import User
 
@@ -35,13 +35,14 @@ class ClienteRegistroForm(UserCreationForm):
             )
         return user
 
+
 class NegocioRegistroForm(UserCreationForm):
     # Campos adicionales
     nombre_negocio = forms.CharField(max_length=255)
     razon_social = forms.CharField(max_length=255)
     ruc = forms.CharField(max_length=11)
     direccion = forms.CharField(max_length=255)
-    
+
     # Utilizar ModelChoiceField para generar listas desplegables
     departamento = forms.ModelChoiceField(queryset=Departamento.objects.all(), empty_label="Seleccione un departamento")
     provincia = forms.ModelChoiceField(queryset=Provincia.objects.none(), empty_label="Seleccione una provincia")  # Inicialmente vacío
@@ -52,17 +53,8 @@ class NegocioRegistroForm(UserCreationForm):
     dni = forms.CharField(max_length=15)  # Agregado el campo dni
     foto_dni = forms.ImageField(required=True)  # Agregado el campo para la foto del DNI
 
-    # Campo para el rubro
-    RUBRO_CHOICES = [
-        ('', 'Seleccione un rubro'),  # Opción predeterminada
-        ('tienda', 'Tienda'),
-        ('restaurante', 'Restaurante'),
-        ('tecnologia', 'Tecnología'),
-        ('moda', 'Moda'),
-        ('automotriz', 'Automotriz'),
-    ]
-    rubro = forms.ChoiceField(choices=RUBRO_CHOICES, label="Rubro")
-
+    # Campo para el rubro usando ModelChoiceField para enlazar con la tabla Rubro
+    rubro = forms.ModelChoiceField(queryset=Rubro.objects.all(), empty_label="Seleccione un rubro", label="Rubro")
 
     class Meta(UserCreationForm.Meta):
         model = User

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.admin import SimpleListFilter
-from .models import User, Cliente, Negocio
+from .models import User, Cliente, Negocio, Rubro
 from .customForms import ClienteForm, NegocioForm
 from django.utils.html import format_html
 
@@ -119,7 +119,7 @@ class UserAdmin(ModelAdmin):
     get_is_active.short_description = 'Cuenta Activa'
 
 #########################################################################
-
+admin.site.register(Rubro)
 admin.site.register(User, UserAdmin)
 admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(Negocio, NegocioAdmin)
