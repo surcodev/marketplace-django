@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %} Registrar Producto {% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <h2>Registrar Producto</h2>
+        <a class="btn btn-primary mb-3" href="{% url 'home' %}">Regresar</a>
+        <div class="card">
+            <div class="card-body">
+                <form class="form-registrar-producto" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- Renderizamos los campos del formulario con {{ form.as_p }} -->
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Registrar Producto</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const subcategorias = {
+        'electronics': [
+            ['laptop', 'Laptop'],
+            ['smartphone', 'Smartphone'],
+            ['tablet', 'Tablet']
+        ],
+        'clothing': [
+            ['camisa', 'Camisa'],
+            ['pantalon', 'Pantalón'],
+            ['chaqueta', 'Chaqueta']
+        ],
+        'home': [
+            ['mueble', 'Mueble'],
+            ['decoracion', 'Decoración']
+        ],
+        'toys': [
+            ['juguete1', 'Juguete 1'],
+            ['juguete2', 'Juguete 2']
+        ],
+        'books': [
+            ['libro1', 'Libro 1'],
+            ['libro2', 'Libro 2']
+        ]
+    };
+
+    function actualizarSubcategorias() {
+        const categoriaSeleccionada = document.getElementById('id_categoria').value;
+        const subcategoriaField = document.getElementById('id_subcategoria');
+        const opciones = subcategorias[categoriaSeleccionada] || [];
+
+        subcategoriaField.innerHTML = '';
+
+        const opcionDefault = document.createElement('option');
+        opcionDefault.value = '';
+        opcionDefault.textContent = 'Seleccione una subcategoría';
+        subcategoriaField.appendChild(opcionDefault);
+
+        opciones.forEach(([value, text]) => {
+            const opcion = document.createElement('option');
+            opcion.value = value;
+            opcion.textContent = text;
+            subcategoriaField.appendChild(opcion);
+        });
+    }
+
+    document.getElementById('id_categoria').addEventListener('change', actualizarSubcategorias);
+
+    actualizarSubcategorias();
+</script>
+
+<style>
+    .form-registrar-producto > p{
+        margin-bottom: 10px;
+    }
+
+    .form-registrar-producto input[type="text"],
+    .form-registrar-producto textarea {
+        width: 100%;
+        padding: 10px;
+        resize: none;
+    }
+</style>
+{% endblock %}

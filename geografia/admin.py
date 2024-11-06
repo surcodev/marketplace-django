@@ -1,8 +1,8 @@
 from django.contrib import admin
 from .models import Departamento, Provincia, Distrito
 
-from unfold.admin import ModelAdmin
-#from django.contrib.admin import ModelAdmin
+#from unfold.admin import ModelAdmin
+from django.contrib.admin import ModelAdmin
 
 class DepartamentoAdmin(ModelAdmin):
     list_display = ('get_departamento',)

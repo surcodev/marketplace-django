@@ -1,13 +1,6 @@
-- Registro Negocio
-    - nombre galeria
-    - ruc
-    - razon social
-    - direccion
-    - distrito
-    - administrador
-    - dni
-    - foto
-    - celular
-    - email
-    - fecha registro
-    
+python.exe .\manage.py makemigrations perfil
+python.exe .\manage.py makemigrations geografia
+python.exe .\manage.py makemigrations inventario
+python.exe .\manage.py makemigrations producto
+python.exe .\manage.py migrate
+python .\manage.py createsuperuser

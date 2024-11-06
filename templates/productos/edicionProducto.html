@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edición de Producto{% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>PRODUCTO EN GENERAL</h2>
+        <a class="btn btn-primary mb-3" href="{% url 'home' %}">Regresar</a>
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'edicionProducto' producto.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="imagenes">Imágenes:</label>
+                        <div class="row">
+                            {% for i in "1234" %}
+                            <div class="col-md-3">
+                                <div class="image-upload">
+                                    <label for="imagen{{ forloop.counter }}">
+                                        <img id="preview-imagen{{ forloop.counter }}" src="{% static 'img/upload.png' %}"
+                                            alt="Imagen {{ forloop.counter }}" class="img-thumbnail">
+                                    </label>
+                                    <input type="file" id="imagen{{ forloop.counter }}" name="imagen{{ forloop.counter }}" class="form-control-file"
+                                        onchange="previewImage(this, 'preview-imagen{{ forloop.counter }}')">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Campos del formulario -->
+                    <div class="form-group">
+                        <label for="id_nombre">Nombre:</label>
+                        <input type="text" id="id_nombre" name="nombre" value="{{ form.nombre.value }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_categoria">Categoría:</label>
+                        <input type="text" id="id_categoria" name="categoria" value="{{ form.categoria.value }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_subcategoria">Subcategoría:</label>
+                        <input type="text" id="id_subcategoria" name="subcategoria"
+                            value="{{ form.subcategoria.value }}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_tamaño">Tamaño:</label>
+                        <input type="text" id="id_tamaño" name="tamaño" value="{{ form.tamaño.value }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_color">Color:</label>
+                        <input type="text" id="id_color" name="color" value="{{ form.color.value }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_medidas">Medidas:</label>
+                        <input type="text" id="id_medidas" name="medidas" value="{{ form.medidas.value }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_marca">Marca:</label>
+                        <input type="text" id="id_marca" name="marca" value="{{ form.marca.value }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_modelo">Modelo:</label>
+                        <input type="text" id="id_modelo" name="modelo" value="{{ form.modelo.value }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_descripcion">Descripción:</label>
+                        <textarea id="id_descripcion" name="descripcion"
+                            class="form-control">{{ form.descripcion.value }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_stock">Existencias:</label>
+                        <input type="number" id="id_stock" name="stock" value="{{ form.stock.value }}"
+                            class="form-control">
+                    </div>
+
+
+                    <!-- Sección de Opciones Adicionales -->
+                    <div class="form-group">
+                        <button type="button" class="collapsible">Opciones Adicionales</button>
+                        <div class="collapsible-content">
+                            <label for="id_video">Video:</label>
+                            <input type="file" id="id_video" name="video" class="form-control-file">
+
+                            <label for="id_garantia">Garantía:</label>
+                            <input type="checkbox" id="id_garantia" name="garantia" {% if form.garantia.value%}checked{% endif %}>
+
+                            <label for="id_servicio_tecnico">Servicio técnico:</label>
+                            <input type="checkbox" id="id_servicio_tecnico" name="servicio_tecnico" {% if form.servicio_tecnico.value %}checked{% endif %}>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Opciones de Envío -->
+                    <div class="form-group">
+                        <button type="button" class="collapsible">Opciones de Envío</button>
+                        <div class="collapsible-content">
+                            <label for="id_envio">Envío:</label>
+                            <input type="checkbox" id="id_envio" name="envio" {% if form.envio.value %}checked{% endif %}>
+
+                            <label style="display: block;" for="id_tiempo_entrega">Tiempo de entrega:</label>
+                            <select id="id_tiempo_entrega" name="tiempo_entrega" class="form-control">
+                                <option value="8" {% if form.tiempo_entrega.value == 8 %}selected{% endif %}>8 horas</option>
+                                <option value="12" {% if form.tiempo_entrega.value == 12 %}selected{% endif %}>12 horas</option>
+                                <option value="24" {% if form.tiempo_entrega.value == 24 %}selected{% endif %}>24 horas</option>
+                                <option value="48" {% if form.tiempo_entrega.value == 48 %}selected{% endif %}>48 horas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Publicar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos de los botones de las secciones */
+    .collapsible {
+        background-color: #28a745;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+        border: none;
+        outline: none;
+        font-size: 18px;
+        width: 100%;
+        text-align: left;
+        transition: background-color 0.3s;
+    }
+
+    .collapsible:hover {
+        background-color: #218838;
+    }
+
+    /* Estilos de contenido */
+    .collapsible-content {
+        display: none;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        padding: 15px;
+    }
+</style>
+
+<script>
+    // Script para la animación de los desplegables
+    document.querySelectorAll('.collapsible').forEach((collapsible) => {
+        collapsible.addEventListener('click', function () {
+            this.classList.toggle('active');
+            let content = this.nextElementSibling;
+
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+            }
+        });
+    });
+
+
+    function previewImage(input, previewId) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById(previewId).src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+{% endblock %}

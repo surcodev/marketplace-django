@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %} Gestión de Productos {% endblock %}
+{% block body %}
+<h2>Productos en General</h2>
+<a class="btn btn-success mb-3" href="{% url 'registrarProducto' %}">Agregar nuevo producto</a>
+<div class="row">
+    {% for producto in productos %}
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <div class="imagenes">
+                    {% for img in producto.imagenes %}
+                    <img src="{{ img }}" alt="Imagen del producto" class="img-fluid">
+                    {% endfor %}
+                </div>
+                <p class="card-text">Categoría: {{ producto.categoria }}</p>
+                <p class="card-text">Subcategoría: {{ producto.subcategoria }}</p>
+                <p class="card-text">Descripción: {{ producto.descripcion }}</p>
+                <a href="{% url 'edicionProducto' producto.id %}" class="btn btn-primary">Editar</a>
+                <a href="{% url 'eliminarProducto' producto.id %}" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

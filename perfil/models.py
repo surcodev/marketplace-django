@@ -7,8 +7,8 @@ from django.core.validators import RegexValidator
 
 import uuid
 from geografia.models import Departamento, Provincia, Distrito
-
-################################################################################
+from inventario.models import Rubro
+##################################################################################################
 
 # perfil.User
 class User(AbstractUser):
@@ -36,12 +36,6 @@ class Cliente(models.Model):
     def delete(self, *args, **kwargs):
         self.user.delete()
         super().delete(*args, **kwargs)
-
-
-class Rubro(models.Model):
-    nombre=models.CharField(max_length=100)
-    def __str__(self):
-        return self.nombre
 
 # perfil.Negocio
 class Negocio(models.Model):
@@ -76,6 +70,10 @@ class Negocio(models.Model):
 
     class Meta:
         verbose_name_plural = "Administradores de Negocio"
+    def __str__(self):
+        return self.nombre_negocio
+
+##################################################################################################
 
 # Señal para eliminar el usuario relacionado cuando se elimina un negocio
 @receiver(post_delete, sender=Negocio)

@@ -16,5 +16,8 @@ urlpatterns = [
     
     path('ajax/cargar-provincias/', views.cargar_provincias, name='cargar_provincias'),
     path('ajax/cargar-distritos/', views.cargar_distritos, name='cargar_distritos'),
+
+    # PRODS
+    path('prod/', include('producto.urls')),
 ]
 

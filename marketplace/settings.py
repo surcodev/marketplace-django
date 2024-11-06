@@ -1,5 +1,4 @@
 from pathlib import Path
-import environ
 import os
 
 from django.templatetags.static import static
@@ -39,20 +38,17 @@ UNFOLD = {
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Iniciar libreria environ
-env = environ.Env()
-environ.Env.read_env()
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str('SECRET_KEY')
+SECRET_KEY = "hello"
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', default=False)
-ALLOWED_HOSTS = tuple(env.list('ALLOWED_HOSTS', default=[]))
+DEBUG = True
+ALLOWED_HOSTS = ["*"]
 #ALLOWED_HOSTS =["0.tcp.sa.ngrok.io"]
 # Application definition
 
 INSTALLED_APPS = [
-    'unfold',
+    'django_extensions',
+    #'unfold',
     'crispy_forms',
     'crispy_bootstrap5',
     'widget_tweaks',
@@ -64,9 +60,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # APPS
-    'perfil',
-    'geografia',
+    'perfil', # user, cliente, negocio
+    'geografia', # dep, prov, distrito
+    'inventario', # rubro, categoria, subcategoria
+    'producto', # producto, servicio
 ]
+
+GRAPH_MODELS = {
+  'app_labels': ["perfil", "geografia"],
+}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
@@ -112,11 +114,11 @@ DATABASES = {
 # DATABASES = {
 #         'default': {
 #             'ENGINE': 'django.db.backends.mysql',
-#             'NAME': env.str('DB_NAME'),
-#             'USER': env.str('DB_USER'),
-#             'PASSWORD': env.str('DB_PASSWORD'),
-#             'HOST': env.str('DB_HOST'),
-#             'PORT': env.str('DB_PORT'),
+#             'NAME': 'marketplace',
+#             'USER': 'root',
+#             'PASSWORD': '2710',
+#             'HOST': 'localhost',
+#             'PORT': '3306'
 #         }
 # }
 
